@@ -43,10 +43,10 @@ O Apache ZooKeeper é um serviço para fornecer informações de configuração,
 Docker configurations to go up with just one command all the technologies that Kafka covers.
 The services that this docker-compose raises are:
 
-- Kafka: Streaming Service, responsible for triggering and consuming events.
-- Zookeper: Stores information as environment variables.
-- Schema Registry = Contract between communications, which guarantees that the saved data will always have the same structure as the data consumed.
-- AKHQ = Graphical interface to visualize everything that is happening in your local Kafka.
+- `Kafka:` Streaming Service, responsible for triggering and consuming events.
+- `Zookeper:` Stores information as environment variables.
+- `Schema Registry:` Contract between communications, which guarantees that the saved data will always have the same structure as the data consumed.
+- `AKHQ:` Graphical interface to visualize everything that is happening in your local Kafka.
 
 ## Setup
 
