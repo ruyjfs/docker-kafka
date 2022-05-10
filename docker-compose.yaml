@@ -1,27 +1,75 @@
 ---
 version: '3'
 services:
-  zookeeper:
+  kafka-zookeeper-server:
+    container_name: kafka-zookeeper
+    hostname: kafka-zookeeper
     image: confluentinc/cp-zookeeper:7.0.1
-    container_name: zookeeper
     environment:
       ZOOKEEPER_CLIENT_PORT: 2181
       ZOOKEEPER_TICK_TIME: 2000
-
-  broker:
+  kafka-broker-server:
+    container_name: kafka-broker
+    hostname: kafka-broker
     image: confluentinc/cp-kafka:7.0.1
-    container_name: broker
     ports:
     # To learn about configuring Kafka for access across networks see
     # https://www.confluent.io/blog/kafka-client-cannot-connect-to-broker-on-aws-on-docker-etc/
       - "9092:9092"
-    depends_on:
-      - zookeeper
     environment:
       KAFKA_BROKER_ID: 1
-      KAFKA_ZOOKEEPER_CONNECT: 'zookeeper:2181'
+      KAFKA_ZOOKEEPER_CONNECT: 'kafka-zookeeper:2181'
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka-broker:9092,PLAINTEXT_INTERNAL://kafka-broker:29092
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_INTERNAL:PLAINTEXT
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092,PLAINTEXT_INTERNAL://broker:29092
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
       KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
       KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+    depends_on:
+      - kafka-zookeeper-server
+    links:
+      - kafka-zookeeper-server
+  kafka-schema-registry-server:
+    container_name: kafka-schema-registry
+    hostname: kafka-schema-registry
+    image: confluentinc/cp-schema-registry
+    environment:
+      SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS: 'PLAINTEXT://kafka-broker:9092'
+      # SCHEMA_REGISTRY_KAFKASTORE_CONNECTION_URL: "kafka-zookeeper-server:2181"
+      SCHEMA_REGISTRY_HOST_NAME: kafka-schema-registry
+      SCHEMA_REGISTRY_LISTENERS: "http://0.0.0.0:8085"
+      SCHEMA_REGISTRY_LOG4J_ROOT_LOGLEVEL: 'INFO'
+    depends_on:
+      - kafka-zookeeper-server
+      - kafka-broker-server
+    links:
+      - kafka-zookeeper-server
+      - kafka-broker-server
+    ports:
+      - 8085:8085
+  kafka-akhq-server:
+    container_name: kafka-akhq
+    hostname: kafka-akhq
+    image: tchiotludo/akhq:dev
+    environment:
+      AKHQ_CONFIGURATION: |
+        akhq:
+          connections:
+            kafka-broker:
+              properties:
+                bootstrap.servers: "kafka-broker:9092"
+              schema-registry:
+                url: "http://kafka-schema-registry:8085"
+              connect:
+                - name: "connect"
+                  url: "http://connect:8083"
+    #   JVM_OPTS_FILE: /app/jvm.options
+    ports:
+      - "8091:8080"
+    # volumes:
+    #   - /tmp/application.yml:/app/application.yml
+    depends_on:
+      - kafka-broker-server
+      - kafka-schema-registry-server
+    links:
+      - kafka-broker-server
+      - kafka-schema-registry-server
