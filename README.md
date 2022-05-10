@@ -7,13 +7,14 @@
 
 ### Português
 
-Configurações docker para subir com apenas um compando todas as tecnologias que abrangem o Kafka.
-Os serviços que este docker-compose sobe, são:
+Configurações docker para subir com apenas um comando todas as tecnologias necessárias para um ambiente local com Kafka.
 
-- Kafka: Serviço de Streaming, responsável pelos disparos e consumo dos eventos.
-- Zookeper: Armazena informações como variáveis de ambiente.
-- Schema Registry = Contrato entre as comunicasões, ele que garante que os dados salvos vão ser sempre a mesma estrutura dos dados que se consome.
-- AKHQ = Interface gráfica para visualizar tudo que está acontecendo no seu Kafka local.
+Os serviços que este docker-compose monta, são:
+
+- `Kafka:` Serviço de Streaming, responsável pelos disparos e consumo dos eventos.
+- `Zookeper:` Armazena informações como variáveis de ambiente.
+- `Schema Registry:` Contrato entre as comunicasões, ele que garante que os dados salvos vão ser sempre a mesma estrutura dos dados que se consome.
+- `AKHQ:` Interface gráfica para visualizar tudo que está acontecendo no seu Kafka local.
 
 ## Configuração
 
@@ -39,7 +40,7 @@ O Apache ZooKeeper é um serviço para fornecer informações de configuração,
 
 ### English
 
-Docker configurations to go up with just one compending all the technologies that Kafka covers.
+Docker configurations to go up with just one command all the technologies that Kafka covers.
 The services that this docker-compose raises are:
 
 - Kafka: Streaming Service, responsible for triggering and consuming events.
